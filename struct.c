@@ -223,21 +223,27 @@ static void pack_double(unsigned char **bp, double val, int endian)
     }
 }
 
-/*
- * only packing the string of terminal '\0'
- */
-static void pack_string(unsigned char **bp, char *str, int endian)
+static void pack_blob(unsigned char **bp, char *blob, int32_t len, int endian)
 {
-    int32_t len = strlen(str);
     int fill = 0, i;
+    len = len > 0 ? len : 0;
     pack_int32_t(bp, len, endian);
-    if (len) {
-        strncpy((char *)*bp, str, len);
+    if (len > 0)
+    {
+        pack_int32_t(bp, len, endian);
+        memcpy(*bp, blob, len);
         *bp += len;
         fill = (int)ROUNDUP((int)*bp) - (int)*bp;
         for (i = 0; i < fill; i++)
             *((*bp)++) = 0;
     }
+}
+/*
+ * only packing the string of terminal '\0'
+ */
+static void pack_string(unsigned char **bp, char *str, int endian)
+{
+    pack_blob(bp, str, strlen(str), endian);
 }
 
 static void unpack_int16_t(unsigned char **bp, int16_t *dst, int endian)
@@ -384,18 +390,37 @@ static void unpack_double(unsigned char **bp, double *dst, int endian)
     *dst = u.d;
 }
 
-static void unpack_string(unsigned char **bp, char *str, int endian)
+static char *blobndup(const char *str, const int len)
+{
+    char *dest = (char *)malloc(len + 1);
+    memcpy(dest, str, len);
+    dest[len] = '\0';
+    return dest;
+}
+
+static void unpack_string(unsigned char **bp, char **str, int endian)
 {
     int32_t len = 0;
     unpack_int32_t(bp, &len, endian);
-    if (len)
+    if (len > 0)
     {
-        strncpy(str, (char *)*bp, len);
-        str[len] = '\0';
+        *str = blobndup((char *)*bp, len);
         *bp += len;
         *bp = (unsigned char *)ROUNDUP((int32_t)*bp);
     }
 }
+
+static void unpack_blob(unsigned char **bp, char **str, int32_t *len, int endian)
+{
+    unpack_int32_t(bp, len, endian);
+    if (len > 0)
+    {
+        *str = blobndup((char *)*bp, *len);
+        *bp += len;
+        *bp = (unsigned char *)ROUNDUP((int32_t)*bp);
+    }
+}
+
 static int pack_va_list(unsigned char *buf, int offset, const char *fmt,
                         va_list args)
 {
@@ -419,6 +444,8 @@ static int pack_va_list(unsigned char *buf, int offset, const char *fmt,
     float f;
     double d;
     char *s;
+    char *blob;
+    int32_t blob_len;
 
     CHECK_PREREQUISITE();
 
@@ -528,6 +555,14 @@ static int pack_va_list(unsigned char *buf, int offset, const char *fmt,
                 pack_string(&bp, s, *ep);
             }
             break;
+        case 'o':
+            CHECK_REPETITION(num, num_buf_idx, num_buf);
+            for (i = 0; i < num; i++) {
+                blob = va_arg(args, char*);
+                blob_len = va_arg(args, int32_t);
+                pack_blob(&bp, blob, blob_len, *ep);
+            }
+            break;
         default:
             if (isdigit((int)*p)) {
                 num_buf[num_buf_idx++] = *p;
@@ -561,7 +596,9 @@ static int unpack_va_list(unsigned char *buf, int offset, const char *fmt,
     uint64_t *Q;
     float *f;
     double *d;
-    char *s;
+    char **s;
+    char **blob;
+    int32_t *blob_len;
 
     CHECK_PREREQUISITE();
 
@@ -661,8 +698,16 @@ static int unpack_va_list(unsigned char *buf, int offset, const char *fmt,
         case 's':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             for (i = 0; i < num; i++) {
-                s = va_arg(args, char*);
+                s = va_arg(args, char**);
                 unpack_string(&bp, s, *ep);
+            }
+            break;
+        case 'o':
+            CHECK_REPETITION(num, num_buf_idx, num_buf);
+            for (i = 0; i < num; i++) {
+                blob = va_arg(args, char**);
+                blob_len = va_arg(args, int32_t*);
+                unpack_blob(&bp, blob, blob_len, *ep);
             }
             break;
         default:

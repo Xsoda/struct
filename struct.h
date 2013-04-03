@@ -51,7 +51,9 @@
  *  -------+--------------------+--------------
  *   d     | double             | 8
  *  -------+--------------------+--------------
- *   s     | char[]             |
+ *   s     | char[]             | Null-terminated string
+ *  -------+--------------------+--------------
+ *   o     | char[]             | blob data
  *  -------------------------------------------
  *
  * A format character may be preceded by an integral repeat count.
@@ -72,13 +74,9 @@
  * Example 2. pack/unpack a string.
  *
  * char buf[BUFSIZ] = {0, );
- * char str[32] = {'\0', };
- * char fmt[32] = {'\0', };
- * char ostr[32] = {'\0', };
+ * char *ostr, *str;
  *
- * strcpy(str, "test");
- *
- * struct_pack(buf, "!2s", str, "packet");
+ * struct_pack(buf, "!2s", "test", "packet");
  *
  * now, buf maybe like this:
  * 
@@ -90,7 +88,7 @@
  *  12     70 61 63 6b  pack   second string data
  *  16     65 74 00 00  et..   .. and 2 zero-byte to fill   
  *
- * struct_unpack(buf, "!2s", ostr, str);
+ * struct_unpack(buf, "!2s", &ostr, &str);
  *
  */
 #ifndef _STRUCT_H_
