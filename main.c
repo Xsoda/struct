@@ -49,6 +49,9 @@ int main()
 	printf("unpack 2: %s\n", str2);
 	printf("-------------------------------------------\n");
 	print_hex((unsigned char *)blob, len);
+	free(str1);
+	free(str2);
+	free(blob);
 	system("pause");
 	return 1;
 }
