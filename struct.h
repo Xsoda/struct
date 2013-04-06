@@ -5,7 +5,11 @@
  *      Author: Wonseok
  *
  * stolen from https://github.com/svperbeast/struct
- * and modify pack/unpack string(char[])
+ * 
+ * modify:
+ *    - pack/unpack Null-terminated string
+ *    - pack/unpack blob data
+ *    - pack/unpack *struct timeb*
  *
  * Interpret strings as packed binary data
  *
