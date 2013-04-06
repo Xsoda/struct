@@ -51,11 +51,11 @@
  *  -------+--------------------+--------------
  *   d     | double             | 8
  *  -------+--------------------+--------------
- *   s     | char[]             | Null-terminated string
+ *   s     | char *             | Null-terminated string
  *  -------+--------------------+--------------
- *   o     | char[]             | blob data
+ *   o     | char *             | blob data
  *  -------+--------------------+---------------
- *   t     | timeb              | struct
+ *   t     | struct timeb       | sizeof(struct timeb) == 14
  *  --------------------------------------------
  *
  * A format character may be preceded by an integral repeat count.
