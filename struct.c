@@ -21,154 +21,172 @@
 #define ROUNDUP(x) (void *)((((uintptr_t)(x)) + ALIGNMENT_MASK) & ~ALIGNMENT_MASK)
 
 enum endian {
-    STRUCT_ENDIAN_NOT_SET,
-    STRUCT_ENDIAN_BIG,
-    STRUCT_ENDIAN_LITTLE
+   STRUCT_ENDIAN_NOT_SET,
+   STRUCT_ENDIAN_BIG,
+   STRUCT_ENDIAN_LITTLE
 };
 
 int get_endian(void)
 {
-    int i = 0x00000001;
-    if (((char *)&i)[0]) {
-        return STRUCT_ENDIAN_LITTLE;
-    } else {
-        return STRUCT_ENDIAN_BIG;
-    }
+   int i = 0x00000001;
+   if (((char *)&i)[0]) {
+      return STRUCT_ENDIAN_LITTLE;
+   } else {
+      return STRUCT_ENDIAN_BIG;
+   }
 }
 static int myendian = STRUCT_ENDIAN_NOT_SET;
 
-#define CHECK_PREREQUISITE() do {                   \
-        if (myendian == STRUCT_ENDIAN_NOT_SET) {    \
-            struct_init();                          \
-        }                                           \
-    } while (0)
+#define CHECK_PREREQUISITE() do {               \
+      if (myendian == STRUCT_ENDIAN_NOT_SET) {  \
+         struct_init();                         \
+      }                                         \
+   } while (0)
 
 #define CHECK_REPETITION(n, i, b) do {          \
-        if ((i) > 0) {                          \
-            errno = 0;                          \
-            (n) = strtol((b), NULL, 10);        \
-            if (errno != 0) {                   \
-                break;                          \
-            }                                   \
-        } else {                                \
-            (n) = 1;                            \
-        }                                       \
-        (i) = 0;                                \
-        memset((b), 0, sizeof((b)));            \
-    } while (0)
+      if ((i) > 0) {                            \
+         errno = 0;                             \
+         (n) = strtol((b), NULL, 10);           \
+         if (errno != 0) {                      \
+            break;                              \
+         }                                      \
+      } else {                                  \
+         (n) = 1;                               \
+      }                                         \
+      (i) = 0;                                  \
+      memset((b), 0, sizeof((b)));              \
+   } while (0)
 
 typedef union {
-    float f;
-    unsigned char b[sizeof(float)];
+float f;
+unsigned char b[sizeof(float)];
 } fsplit_t;
 
 typedef union {
-    double d;
-    unsigned char b[sizeof(double)];
+double d;
+unsigned char b[sizeof(double)];
 } dsplit_t;
 
 
 static void struct_init(void)
 {
-    myendian = get_endian();
+   myendian = get_endian();
 }
 
 static void pack_int16_t(unsigned char **bp, int16_t val, int endian)
 {
-    if (endian == myendian) {
-        *((*bp)++) = val;
-        *((*bp)++) = val >> 8;
-    } else {
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val;
-    }
+   if (endian == myendian)
+   {
+      *((*bp)++) = val;
+      *((*bp)++) = val >> 8;
+   }
+   else
+   {
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val;
+   }
 }
 
 static void pack_uint16_t(unsigned char **bp, uint16_t val, int endian)
 {
-    if (endian == myendian) {
-        *((*bp)++) = val;
-        *((*bp)++) = val >> 8;
-    } else {
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val;
-    }
+   if (endian == myendian)
+   {
+      *((*bp)++) = val;
+      *((*bp)++) = val >> 8;
+   }
+   else
+   {
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val;
+   }
 }
 
 static void pack_int32_t(unsigned char **bp, int32_t val, int endian)
 {
-    if (endian == myendian) {
-        *((*bp)++) = val;
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val >> 16;
-        *((*bp)++) = val >> 24;
-    } else {
-        *((*bp)++) = val >> 24;
-        *((*bp)++) = val >> 16;
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val;
-    }
+   if (endian == myendian)
+   {
+      *((*bp)++) = val;
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val >> 16;
+      *((*bp)++) = val >> 24;
+   }
+   else
+   {
+      *((*bp)++) = val >> 24;
+      *((*bp)++) = val >> 16;
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val;
+   }
 }
 
 static void pack_uint32_t(unsigned char **bp, uint32_t val, int endian)
 {
-    if (endian == myendian) {
-        *((*bp)++) = val;
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val >> 16;
-        *((*bp)++) = val >> 24;
-    } else {
-        *((*bp)++) = val >> 24;
-        *((*bp)++) = val >> 16;
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val;
-    }
+   if (endian == myendian)
+   {
+      *((*bp)++) = val;
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val >> 16;
+      *((*bp)++) = val >> 24;
+   }
+   else
+   {
+      *((*bp)++) = val >> 24;
+      *((*bp)++) = val >> 16;
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val;
+   }
 }
 
 static void pack_int64_t(unsigned char **bp, int64_t val, int endian)
 {
-    if (endian == myendian) {
-        *((*bp)++) = val;
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val >> 16;
-        *((*bp)++) = val >> 24;
-        *((*bp)++) = val >> 32;
-        *((*bp)++) = val >> 40;
-        *((*bp)++) = val >> 48;
-        *((*bp)++) = val >> 56;
-    } else {
-        *((*bp)++) = val >> 56;
-        *((*bp)++) = val >> 48;
-        *((*bp)++) = val >> 40;
-        *((*bp)++) = val >> 32;
-        *((*bp)++) = val >> 24;
-        *((*bp)++) = val >> 16;
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val;
-    }
+   if (endian == myendian)
+   {
+      *((*bp)++) = val;
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val >> 16;
+      *((*bp)++) = val >> 24;
+      *((*bp)++) = val >> 32;
+      *((*bp)++) = val >> 40;
+      *((*bp)++) = val >> 48;
+      *((*bp)++) = val >> 56;
+   }
+   else
+   {
+      *((*bp)++) = val >> 56;
+      *((*bp)++) = val >> 48;
+      *((*bp)++) = val >> 40;
+      *((*bp)++) = val >> 32;
+      *((*bp)++) = val >> 24;
+      *((*bp)++) = val >> 16;
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val;
+   }
 }
 
 static void pack_uint64_t(unsigned char **bp, uint64_t val, int endian)
 {
-    if (endian == myendian) {
-        *((*bp)++) = val;
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val >> 16;
-        *((*bp)++) = val >> 24;
-        *((*bp)++) = val >> 32;
-        *((*bp)++) = val >> 40;
-        *((*bp)++) = val >> 48;
-        *((*bp)++) = val >> 56;
-    } else {
-        *((*bp)++) = val >> 56;
-        *((*bp)++) = val >> 48;
-        *((*bp)++) = val >> 40;
-        *((*bp)++) = val >> 32;
-        *((*bp)++) = val >> 24;
-        *((*bp)++) = val >> 16;
-        *((*bp)++) = val >> 8;
-        *((*bp)++) = val;
-    }
+   if (endian == myendian)
+   {
+      *((*bp)++) = val;
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val >> 16;
+      *((*bp)++) = val >> 24;
+      *((*bp)++) = val >> 32;
+      *((*bp)++) = val >> 40;
+      *((*bp)++) = val >> 48;
+      *((*bp)++) = val >> 56;
+   }
+   else
+   {
+      *((*bp)++) = val >> 56;
+      *((*bp)++) = val >> 48;
+      *((*bp)++) = val >> 40;
+      *((*bp)++) = val >> 32;
+      *((*bp)++) = val >> 24;
+      *((*bp)++) = val >> 16;
+      *((*bp)++) = val >> 8;
+      *((*bp)++) = val;
+}
 }
 
 /*
@@ -176,21 +194,24 @@ static void pack_uint64_t(unsigned char **bp, uint64_t val, int endian)
  */
 static void pack_float(unsigned char **bp, float val, int endian)
 {
-    fsplit_t u;
+   fsplit_t u;
 
-    u.f = val;
+   u.f = val;
 
-    if (endian == myendian) {
-        *((*bp)++) = u.b[3];
-        *((*bp)++) = u.b[2];
-        *((*bp)++) = u.b[1];
-        *((*bp)++) = u.b[0];
-    } else {
-        *((*bp)++) = u.b[0];
-        *((*bp)++) = u.b[1];
-        *((*bp)++) = u.b[2];
-        *((*bp)++) = u.b[3];
-    }
+   if (endian == myendian)
+   {
+      *((*bp)++) = u.b[3];
+      *((*bp)++) = u.b[2];
+      *((*bp)++) = u.b[1];
+      *((*bp)++) = u.b[0];
+   }
+   else
+   {
+      *((*bp)++) = u.b[0];
+      *((*bp)++) = u.b[1];
+      *((*bp)++) = u.b[2];
+      *((*bp)++) = u.b[3];
+   }
 }
 
 /*
@@ -198,565 +219,618 @@ static void pack_float(unsigned char **bp, float val, int endian)
  */
 static void pack_double(unsigned char **bp, double val, int endian)
 {
-    dsplit_t u;
+   dsplit_t u;
 
-    u.d = val;
+   u.d = val;
 
-    if (endian == myendian) {
-        *((*bp)++) = u.b[7];
-        *((*bp)++) = u.b[6];
-        *((*bp)++) = u.b[5];
-        *((*bp)++) = u.b[4];
-        *((*bp)++) = u.b[3];
-        *((*bp)++) = u.b[2];
-        *((*bp)++) = u.b[1];
-        *((*bp)++) = u.b[0];
-    } else {
-        *((*bp)++) = u.b[0];
-        *((*bp)++) = u.b[1];
-        *((*bp)++) = u.b[2];
-        *((*bp)++) = u.b[3];
-        *((*bp)++) = u.b[4];
-        *((*bp)++) = u.b[5];
-        *((*bp)++) = u.b[6];
-        *((*bp)++) = u.b[7];
-    }
+   if (endian == myendian)
+   {
+      *((*bp)++) = u.b[7];
+      *((*bp)++) = u.b[6];
+      *((*bp)++) = u.b[5];
+      *((*bp)++) = u.b[4];
+      *((*bp)++) = u.b[3];
+      *((*bp)++) = u.b[2];
+      *((*bp)++) = u.b[1];
+      *((*bp)++) = u.b[0];
+   }
+   else
+   {
+      *((*bp)++) = u.b[0];
+      *((*bp)++) = u.b[1];
+      *((*bp)++) = u.b[2];
+      *((*bp)++) = u.b[3];
+      *((*bp)++) = u.b[4];
+      *((*bp)++) = u.b[5];
+      *((*bp)++) = u.b[6];
+      *((*bp)++) = u.b[7];
+}
 }
 
 static void pack_blob(unsigned char **bp, char *blob, int32_t len, int endian)
 {
-    int fill = 0, i;
-    len = len > 0 ? len : 0;
-    pack_int32_t(bp, len, endian);
-    if (len > 0)
-    {
-        memcpy(*bp, blob, len);
-        *bp += len;
-        fill = (int)(int *)ROUNDUP(*(int *)bp) - *(int *)bp;
-        for (i = 0; i < fill; i++)
-            *((*bp)++) = 0;
-    }
+   int fill = 0, i;
+   len = len > 0 ? len : 0;
+   pack_int32_t(bp, len, endian);
+   if (len > 0)
+   {
+      memcpy(*bp, blob, len);
+      *bp += len;
+      fill = (int)(int *)ROUNDUP(*(int *)bp) - *(int *)bp;
+      for (i = 0; i < fill; i++)
+         *((*bp)++) = 0;
+}
 }
 /*
  * only pack Null-terminated string
  */
 static void pack_string(unsigned char **bp, char *str, int endian)
 {
-    pack_blob(bp, str, strlen(str), endian);
+   pack_blob(bp, str, strlen(str), endian);
 }
 
 static void pack_timeb(unsigned char **bp, struct timeb *time, int endian)
 {
-    pack_int64_t(bp, time->time, endian);
-    pack_uint16_t(bp, time->millitm, endian);
-    pack_int16_t(bp, time->timezone, endian);
-    pack_int16_t(bp, time->dstflag, endian);
+   pack_int64_t(bp, time->time, endian);
+   pack_uint16_t(bp, time->millitm, endian);
+   pack_int16_t(bp, time->timezone, endian);
+   pack_int16_t(bp, time->dstflag, endian);
 }
 
 static void unpack_int16_t(unsigned char **bp, int16_t *dst, int endian)
 {
-    if (endian == myendian) {
-        *dst = *((*bp)++);
-        *dst |= *((*bp)++) << 8;
-    } else {
-        *dst = *((*bp)++) << 8;
-        *dst |= *((*bp)++);
-    }
+   if (endian == myendian)
+   {
+      *dst = *((*bp)++);
+      *dst |= *((*bp)++) << 8;
+   }
+   else
+   {
+      *dst = *((*bp)++) << 8;
+      *dst |= *((*bp)++);
+   }
 }
 
 static void unpack_uint16_t(unsigned char **bp, uint16_t *dst, int endian)
 {
-    if (endian == myendian) {
-        *dst = *((*bp)++);
-        *dst |= *((*bp)++) << 8;
-    } else {
-        *dst = *((*bp)++) << 8;
-        *dst |= *((*bp)++);
-    }
+   if (endian == myendian)
+   {
+      *dst = *((*bp)++);
+      *dst |= *((*bp)++) << 8;
+   }
+   else
+   {
+      *dst = *((*bp)++) << 8;
+      *dst |= *((*bp)++);
+   }
 }
 
 static void unpack_int32_t(unsigned char **bp, int32_t *dst, int endian)
 {
-    if (endian == myendian) {
-        *dst = *((*bp)++);
-        *dst |= *((*bp)++) << 8;
-        *dst |= *((*bp)++) << 16;
-        *dst |= *((*bp)++) << 24;
-    } else {
-        *dst = *((*bp)++) << 24;
-        *dst |= *((*bp)++) << 16;
-        *dst |= *((*bp)++) << 8;
-        *dst |= *((*bp)++);
-    }
+   if (endian == myendian)
+   {
+      *dst = *((*bp)++);
+      *dst |= *((*bp)++) << 8;
+      *dst |= *((*bp)++) << 16;
+      *dst |= *((*bp)++) << 24;
+   }
+   else
+   {
+      *dst = *((*bp)++) << 24;
+      *dst |= *((*bp)++) << 16;
+      *dst |= *((*bp)++) << 8;
+      *dst |= *((*bp)++);
+   }
 }
 
 static void unpack_uint32_t(unsigned char **bp, uint32_t *dst, int endian)
 {
-    if (endian == myendian) {
-        *dst = *((*bp)++);
-        *dst |= *((*bp)++) << 8;
-        *dst |= *((*bp)++) << 16;
-        *dst |= *((*bp)++) << 24;
-    } else {
-        *dst = *((*bp)++) << 24;
-        *dst |= *((*bp)++) << 16;
-        *dst |= *((*bp)++) << 8;
-        *dst |= *((*bp)++);
-    }
+   if (endian == myendian)
+   {
+      *dst = *((*bp)++);
+      *dst |= *((*bp)++) << 8;
+      *dst |= *((*bp)++) << 16;
+      *dst |= *((*bp)++) << 24;
+   }
+   else
+   {
+      *dst = *((*bp)++) << 24;
+      *dst |= *((*bp)++) << 16;
+      *dst |= *((*bp)++) << 8;
+      *dst |= *((*bp)++);
+   }
 }
 
 static void unpack_int64_t(unsigned char **bp, int64_t *dst, int endian)
 {
-    if (endian == myendian) {
-        *dst = *((*bp)++);
-        *dst |= (*((*bp)++) & 0xffLL) << 8;
-        *dst |= (*((*bp)++) & 0xffLL) << 16;
-        *dst |= (*((*bp)++) & 0xffLL) << 24;
-        *dst |= (*((*bp)++) & 0xffLL) << 32;
-        *dst |= (*((*bp)++) & 0xffLL) << 40;
-        *dst |= (*((*bp)++) & 0xffLL) << 48;
-        *dst |= (*((*bp)++) & 0xffLL) << 56;
-    } else {
-        *dst = (*((*bp)++) & 0xffLL) << 56;
-        *dst |= (*((*bp)++) & 0xffLL) << 48;
-        *dst |= (*((*bp)++) & 0xffLL) << 40;
-        *dst |= (*((*bp)++) & 0xffLL) << 32;
-        *dst |= (*((*bp)++) & 0xffLL) << 24;
-        *dst |= (*((*bp)++) & 0xffLL) << 16;
-        *dst |= (*((*bp)++) & 0xffLL) << 8;
-        *dst |= *((*bp)++);
-    }
+   if (endian == myendian)
+   {
+      *dst = *((*bp)++);
+      *dst |= (*((*bp)++) & 0xffLL) << 8;
+      *dst |= (*((*bp)++) & 0xffLL) << 16;
+      *dst |= (*((*bp)++) & 0xffLL) << 24;
+      *dst |= (*((*bp)++) & 0xffLL) << 32;
+      *dst |= (*((*bp)++) & 0xffLL) << 40;
+      *dst |= (*((*bp)++) & 0xffLL) << 48;
+      *dst |= (*((*bp)++) & 0xffLL) << 56;
+   }
+   else
+   {
+      *dst = (*((*bp)++) & 0xffLL) << 56;
+      *dst |= (*((*bp)++) & 0xffLL) << 48;
+      *dst |= (*((*bp)++) & 0xffLL) << 40;
+      *dst |= (*((*bp)++) & 0xffLL) << 32;
+      *dst |= (*((*bp)++) & 0xffLL) << 24;
+      *dst |= (*((*bp)++) & 0xffLL) << 16;
+      *dst |= (*((*bp)++) & 0xffLL) << 8;
+      *dst |= *((*bp)++);
+   }
 }
 
 static void unpack_uint64_t(unsigned char **bp, uint64_t *dst, int endian)
 {
-    if (endian == myendian) {
-        *dst = *((*bp)++);
-        *dst |= (*((*bp)++) & 0xffULL) << 8;
-        *dst |= (*((*bp)++) & 0xffULL) << 16;
-        *dst |= (*((*bp)++) & 0xffULL) << 24;
-        *dst |= (*((*bp)++) & 0xffULL) << 32;
-        *dst |= (*((*bp)++) & 0xffULL) << 40;
-        *dst |= (*((*bp)++) & 0xffULL) << 48;
-        *dst |= (*((*bp)++) & 0xffULL) << 56;
-    } else {
-        *dst = (*((*bp)++) & 0xffULL) << 56;
-        *dst |= (*((*bp)++) & 0xffULL) << 48;
-        *dst |= (*((*bp)++) & 0xffULL) << 40;
-        *dst |= (*((*bp)++) & 0xffULL) << 32;
-        *dst |= (*((*bp)++) & 0xffULL) << 24;
-        *dst |= (*((*bp)++) & 0xffULL) << 16;
-        *dst |= (*((*bp)++) & 0xffULL) << 8;
-        *dst |= *((*bp)++);
-    }
+   if (endian == myendian)
+   {
+      *dst = *((*bp)++);
+      *dst |= (*((*bp)++) & 0xffULL) << 8;
+      *dst |= (*((*bp)++) & 0xffULL) << 16;
+      *dst |= (*((*bp)++) & 0xffULL) << 24;
+      *dst |= (*((*bp)++) & 0xffULL) << 32;
+      *dst |= (*((*bp)++) & 0xffULL) << 40;
+      *dst |= (*((*bp)++) & 0xffULL) << 48;
+      *dst |= (*((*bp)++) & 0xffULL) << 56;
+   }
+   else
+   {
+      *dst = (*((*bp)++) & 0xffULL) << 56;
+      *dst |= (*((*bp)++) & 0xffULL) << 48;
+      *dst |= (*((*bp)++) & 0xffULL) << 40;
+      *dst |= (*((*bp)++) & 0xffULL) << 32;
+      *dst |= (*((*bp)++) & 0xffULL) << 24;
+      *dst |= (*((*bp)++) & 0xffULL) << 16;
+      *dst |= (*((*bp)++) & 0xffULL) << 8;
+      *dst |= *((*bp)++);
+   }
 }
 
 static void unpack_float(unsigned char **bp, float *dst, int endian)
 {
-    fsplit_t u;
+   fsplit_t u;
 
-    if (endian == myendian) {
-        u.b[3] = *((*bp)++);
-        u.b[2] = *((*bp)++);
-        u.b[1] = *((*bp)++);
-        u.b[0] = *((*bp)++);
-    } else {
-        u.b[0] = *((*bp)++);
-        u.b[1] = *((*bp)++);
-        u.b[2] = *((*bp)++);
-        u.b[3] = *((*bp)++);
-    }
+   if (endian == myendian)
+   {
+      u.b[3] = *((*bp)++);
+      u.b[2] = *((*bp)++);
+      u.b[1] = *((*bp)++);
+      u.b[0] = *((*bp)++);
+   }
+   else
+   {
+      u.b[0] = *((*bp)++);
+      u.b[1] = *((*bp)++);
+      u.b[2] = *((*bp)++);
+      u.b[3] = *((*bp)++);
+   }
 
-    *dst = u.f;
+   *dst = u.f;
 }
 
 static void unpack_double(unsigned char **bp, double *dst, int endian)
 {
-    dsplit_t u;
+   dsplit_t u;
 
-    if (endian == myendian) {
-        u.b[7] = *((*bp)++);
-        u.b[6] = *((*bp)++);
-        u.b[5] = *((*bp)++);
-        u.b[4] = *((*bp)++);
-        u.b[3] = *((*bp)++);
-        u.b[2] = *((*bp)++);
-        u.b[1] = *((*bp)++);
-        u.b[0] = *((*bp)++);
-    } else {
-        u.b[0] = *((*bp)++);
-        u.b[1] = *((*bp)++);
-        u.b[2] = *((*bp)++);
-        u.b[3] = *((*bp)++);
-        u.b[4] = *((*bp)++);
-        u.b[5] = *((*bp)++);
-        u.b[6] = *((*bp)++);
-        u.b[7] = *((*bp)++);
-    }
+   if (endian == myendian)
+   {
+      u.b[7] = *((*bp)++);
+      u.b[6] = *((*bp)++);
+      u.b[5] = *((*bp)++);
+      u.b[4] = *((*bp)++);
+      u.b[3] = *((*bp)++);
+      u.b[2] = *((*bp)++);
+      u.b[1] = *((*bp)++);
+      u.b[0] = *((*bp)++);
+   }
+   else
+   {
+      u.b[0] = *((*bp)++);
+      u.b[1] = *((*bp)++);
+      u.b[2] = *((*bp)++);
+      u.b[3] = *((*bp)++);
+      u.b[4] = *((*bp)++);
+      u.b[5] = *((*bp)++);
+      u.b[6] = *((*bp)++);
+      u.b[7] = *((*bp)++);
+   }
 
-    *dst = u.d;
+   *dst = u.d;
 }
 
 static char *blobndup(const char *str, const int len)
 {
-    char *dest = (char *)malloc(len + 1);
-    memcpy(dest, str, len);
-    dest[len] = '\0';
-    return dest;
+   char *dest = (char *)malloc(len + 1);
+   memcpy(dest, str, len);
+   dest[len] = '\0';
+   return dest;
 }
 
 static void unpack_string(unsigned char **bp, char **str, int endian)
 {
-    int32_t len = 0;
-    unpack_int32_t(bp, &len, endian);
-    if (len > 0)
-    {
-        *str = blobndup((char *)*bp, len);
-        *bp += len;
-        *bp = (unsigned char *)ROUNDUP(*(int *)bp);
-    }
-    else
-    {
-        *str = (char *)malloc(1);
-        (*str)[0] = 0;
-    }
+   int32_t len = 0;
+   unpack_int32_t(bp, &len, endian);
+   if (len > 0)
+   {
+      *str = blobndup((char *)*bp, len);
+      *bp += len;
+      *bp = (unsigned char *)ROUNDUP(*(int *)bp);
+   }
+   else
+   {
+      *str = (char *)malloc(1);
+      (*str)[0] = 0;
+   }
 }
 
 static void unpack_blob(unsigned char **bp, char **str, int32_t *len, int endian)
 {
-    unpack_int32_t(bp, len, endian);
-    if (len > 0)
-    {
-        *str = blobndup((char *)*bp, *len);
-        *bp += *len;
-        *bp = (unsigned char *)ROUNDUP(*(int *)bp);
-    }
-    else
-        *str = NULL;
+   unpack_int32_t(bp, len, endian);
+   if (len > 0)
+   {
+      *str = blobndup((char *)*bp, *len);
+      *bp += *len;
+      *bp = (unsigned char *)ROUNDUP(*(int *)bp);
+   }
+   else
+      *str = NULL;
 }
 
 static void unpack_timeb(unsigned char **bp, struct timeb *time, int endian)
 {
-    unpack_int64_t(bp, &time->time, endian);
-    unpack_uint16_t(bp, &time->millitm, endian);
-    unpack_int16_t(bp, &time->timezone, endian);
-    unpack_int16_t(bp, &time->dstflag, endian);
+   unpack_int64_t(bp, &time->time, endian);
+   unpack_uint16_t(bp, &time->millitm, endian);
+   unpack_int16_t(bp, &time->timezone, endian);
+   unpack_int16_t(bp, &time->dstflag, endian);
 }
 
 static int pack_va_list(unsigned char *buf, int offset, const char *fmt,
                         va_list args)
 {
-    const char *p;
-    unsigned char *bp;
-    int *ep = &myendian;
-    int endian;
-    char num_buf[32];
-    int num_buf_idx;
-    int num;
-    int i;
+   const char *p;
+   unsigned char *bp;
+   int *ep = &myendian;
+   int endian;
+   char num_buf[32];
+   int num_buf_idx;
+   int num;
+   int i;
 
-    char b;
-    unsigned char B;
-    int16_t h;
-    uint16_t H;
-    int32_t l;
-    uint32_t L;
-    int64_t q;
-    uint64_t Q;
-    float f;
-    double d;
-    char *s;
-    char *blob;
-    int32_t blob_len;
-    struct timeb *time;
+   char b;
+   unsigned char B;
+   int16_t h;
+   uint16_t H;
+   int32_t l;
+   uint32_t L;
+   int64_t q;
+   uint64_t Q;
+   float f;
+   double d;
+   char *s;
+   char *blob;
+   int32_t blob_len;
+   struct timeb *time;
 
-    CHECK_PREREQUISITE();
+   CHECK_PREREQUISITE();
 
-    memset(num_buf, 0, sizeof(num_buf));
-    num_buf_idx = 0;
+   memset(num_buf, 0, sizeof(num_buf));
+   num_buf_idx = 0;
 
-    /*
-     * 'char' and 'short' values, they must be extracted as 'int's,
-     * because C promotes 'char' and 'short' arguments to 'int' when they are
-     * represented by an ellipsis ... parameter.
-     */
+   /*
+    * 'char' and 'short' values, they must be extracted as 'int's,
+    * because C promotes 'char' and 'short' arguments to 'int' when they are
+    * represented by an ellipsis ... parameter.
+    */
 
-    bp = buf + offset;
-    for (p = fmt; *p != '\0'; p++) {
-        switch (*p) {
-        case '=': /* native */
+   bp = buf + offset;
+   for (p = fmt; *p != '\0'; p++)
+   {
+      switch (*p) {
+         case '=': /* native */
             ep = &myendian;
             break;
-        case '<': /* little-endian */
+         case '<': /* little-endian */
             endian = STRUCT_ENDIAN_LITTLE;
             ep = &endian;
             break;
-        case '>': /* big-endian */
+         case '>': /* big-endian */
             endian = STRUCT_ENDIAN_BIG;
             ep = &endian;
             break;
-        case '!': /* network (= big-endian) */
+         case '!': /* network (= big-endian) */
             endian = STRUCT_ENDIAN_BIG;
             ep = &endian;
             break;
-        case 'b':
+         case 'b':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                b = va_arg(args, int);
-                *bp++ = b;
+            for (i = 0; i < num; i++)
+            {
+               b = va_arg(args, int);
+               *bp++ = b;
             }
             break;
-        case 'B':
+         case 'B':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                B = va_arg(args, unsigned int);
-                *bp++ = B;
+            for (i = 0; i < num; i++)
+            {
+               B = va_arg(args, unsigned int);
+               *bp++ = B;
             }
             break;
-        case 'h':
+         case 'h':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                h = va_arg(args, int);
-                pack_int16_t(&bp, h, *ep);
+            for (i = 0; i < num; i++)
+            {
+               h = va_arg(args, int);
+               pack_int16_t(&bp, h, *ep);
             }
             break;
-        case 'H':
+         case 'H':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                H = va_arg(args, int);
-                pack_uint16_t(&bp, H, *ep);
+            for (i = 0; i < num; i++)
+            {
+               H = va_arg(args, int);
+               pack_uint16_t(&bp, H, *ep);
             }
             break;
-        case 'i': /* fall through */
-        case 'l':
+         case 'i': /* fall through */
+         case 'l':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                l = va_arg(args, int32_t);
-                pack_int32_t(&bp, l, *ep);
+            for (i = 0; i < num; i++)
+            {
+               l = va_arg(args, int32_t);
+               pack_int32_t(&bp, l, *ep);
             }
             break;
-        case 'I': /* fall through */
-        case 'L':
+         case 'I': /* fall through */
+         case 'L':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                L = va_arg(args, uint32_t);
-                pack_uint32_t(&bp, L, *ep);
+            for (i = 0; i < num; i++)
+            {
+               L = va_arg(args, uint32_t);
+               pack_uint32_t(&bp, L, *ep);
             }
             break;
-        case 'q':
+         case 'q':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                q = va_arg(args, int64_t);
-                pack_int64_t(&bp, q, *ep);
+            for (i = 0; i < num; i++)
+            {
+               q = va_arg(args, int64_t);
+               pack_int64_t(&bp, q, *ep);
             }
             break;
-        case 'Q':
+         case 'Q':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                Q = va_arg(args, uint64_t);
-                pack_uint64_t(&bp, Q, *ep);
+            for (i = 0; i < num; i++)
+            {
+               Q = va_arg(args, uint64_t);
+               pack_uint64_t(&bp, Q, *ep);
             }
             break;
-        case 'f':
+         case 'f':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                f = va_arg(args, double);
-                pack_float(&bp, f, *ep);
+            for (i = 0; i < num; i++)
+            {
+               f = va_arg(args, double);
+               pack_float(&bp, f, *ep);
             }
             break;
-        case 'd':
+         case 'd':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                d = va_arg(args, double);
-                pack_double(&bp, d, *ep);
+            for (i = 0; i < num; i++)
+            {
+               d = va_arg(args, double);
+               pack_double(&bp, d, *ep);
             }
             break;
-        case 's':
+         case 's':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                s = va_arg(args, char*);
-                pack_string(&bp, s, *ep);
+            for (i = 0; i < num; i++)
+            {
+               s = va_arg(args, char*);
+               pack_string(&bp, s, *ep);
             }
             break;
-        case 'o':
+         case 'o':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                blob = va_arg(args, char*);
-                blob_len = va_arg(args, int32_t);
-                pack_blob(&bp, blob, blob_len, *ep);
+            for (i = 0; i < num; i++)
+            {
+               blob = va_arg(args, char*);
+               blob_len = va_arg(args, int32_t);
+               pack_blob(&bp, blob, blob_len, *ep);
             }
             break;
-        case 't':
+         case 't':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                time = va_arg(args, struct timeb*);
-                pack_timeb(&bp, time, *ep);
+            for (i = 0; i < num; i++)
+            {
+               time = va_arg(args, struct timeb*);
+               pack_timeb(&bp, time, *ep);
             }
             break;
-        default:
-            if (isdigit((int)*p)) {
-                num_buf[num_buf_idx++] = *p;
-            } else {
-                return -1;
-            }
-        }
-    }
-    return (bp - buf);
+         default:
+            if (isdigit((int)*p))
+               num_buf[num_buf_idx++] = *p;
+            else 
+               return -1;
+      }
+   }
+   return (bp - buf);
 }
 
 static int unpack_va_list(unsigned char *buf, int offset, const char *fmt,
                           va_list args)
 {
-    const char *p;
-    unsigned char *bp;
-    int *ep = &myendian;
-    int endian;
-    char num_buf[32];
-    int num_buf_idx;
-    int num;
-    int i;
+   const char *p;
+   unsigned char *bp;
+   int *ep = &myendian;
+   int endian;
+   char num_buf[32];
+   int num_buf_idx;
+   int num;
+   int i;
 
-    char *b;
-    unsigned char *B;
-    int16_t *h;
-    uint16_t *H;
-    int32_t *l;
-    uint32_t *L;
-    int64_t *q;
-    uint64_t *Q;
-    float *f;
-    double *d;
-    char **s;
-    char **blob;
-    int32_t *blob_len;
-    struct timeb *time;
+   char *b;
+   unsigned char *B;
+   int16_t *h;
+   uint16_t *H;
+   int32_t *l;
+   uint32_t *L;
+   int64_t *q;
+   uint64_t *Q;
+   float *f;
+   double *d;
+   char **s;
+   char **blob;
+   int32_t *blob_len;
+   struct timeb *time;
 
-    CHECK_PREREQUISITE();
+   CHECK_PREREQUISITE();
 
-    memset(num_buf, 0, sizeof(num_buf));
-    num_buf_idx = 0;
+   memset(num_buf, 0, sizeof(num_buf));
+   num_buf_idx = 0;
 
-    bp = buf + offset;
-    for (p = fmt; *p != '\0'; p++) {
-        switch (*p) {
-        case '=': /* native */
+   bp = buf + offset;
+   for (p = fmt; *p != '\0'; p++)
+   {
+      switch (*p) {
+         case '=': /* native */
             ep = &myendian;
             break;
-        case '<': /* little-endian */
+         case '<': /* little-endian */
             endian = STRUCT_ENDIAN_LITTLE;
             ep = &endian;
             break;
-        case '>': /* big-endian */
+         case '>': /* big-endian */
             endian = STRUCT_ENDIAN_BIG;
             ep = &endian;
             break;
-        case '!': /* network (= big-endian) */
+         case '!': /* network (= big-endian) */
             endian = STRUCT_ENDIAN_BIG;
             ep = &endian;
             break;
-        case 'b':
+         case 'b':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                b = va_arg(args, char*);
-                *b = *bp++;
+            for (i = 0; i < num; i++)
+            {
+               b = va_arg(args, char*);
+               *b = *bp++;
             }
             break;
-        case 'B':
+         case 'B':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                B = va_arg(args, unsigned char*);
-                *B = *bp++;
+            for (i = 0; i < num; i++)
+            {
+               B = va_arg(args, unsigned char*);
+               *B = *bp++;
             }
             break;
-        case 'h':
+         case 'h':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                h = va_arg(args, int16_t*);
-                unpack_int16_t(&bp, h, *ep);
+            for (i = 0; i < num; i++)
+            {
+               h = va_arg(args, int16_t*);
+               unpack_int16_t(&bp, h, *ep);
             }
             break;
-        case 'H':
+         case 'H':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                H = va_arg(args, uint16_t*);
-                unpack_uint16_t(&bp, H, *ep);
+            for (i = 0; i < num; i++)
+            {
+               H = va_arg(args, uint16_t*);
+               unpack_uint16_t(&bp, H, *ep);
             }
             break;
-        case 'i': /* fall through */
-        case 'l':
+         case 'i': /* fall through */
+         case 'l':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                l = va_arg(args, int32_t*);
-                unpack_int32_t(&bp, l, *ep);
+            for (i = 0; i < num; i++)
+            {
+               l = va_arg(args, int32_t*);
+               unpack_int32_t(&bp, l, *ep);
             }
             break;
-        case 'I': /* fall through */
-        case 'L':
+         case 'I': /* fall through */
+         case 'L':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                L = va_arg(args, uint32_t*);
-                unpack_uint32_t(&bp, L, *ep);
+            for (i = 0; i < num; i++)
+            {
+               L = va_arg(args, uint32_t*);
+               unpack_uint32_t(&bp, L, *ep);
             }
             break;
-        case 'q':
+         case 'q':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                q = va_arg(args, int64_t*);
-                unpack_int64_t(&bp, q, *ep);
+            for (i = 0; i < num; i++)
+            {
+               q = va_arg(args, int64_t*);
+               unpack_int64_t(&bp, q, *ep);
             }
             break;
-        case 'Q':
+         case 'Q':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                Q = va_arg(args, uint64_t*);
-                unpack_uint64_t(&bp, Q, *ep);
+            for (i = 0; i < num; i++)
+            {
+               Q = va_arg(args, uint64_t*);
+               unpack_uint64_t(&bp, Q, *ep);
             }
             break;
-        case 'f':
+         case 'f':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                f = va_arg(args, float*);
-                unpack_float(&bp, f, *ep);
+            for (i = 0; i < num; i++)
+            {
+               f = va_arg(args, float*);
+               unpack_float(&bp, f, *ep);
             }
             break;
-        case 'd':
+         case 'd':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                d = va_arg(args, double*);
-                unpack_double(&bp, d, *ep);
+            for (i = 0; i < num; i++)
+            {
+               d = va_arg(args, double*);
+               unpack_double(&bp, d, *ep);
             }
             break;
-        case 's':
+         case 's':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                s = va_arg(args, char**);
-                unpack_string(&bp, s, *ep);
+            for (i = 0; i < num; i++)
+            {
+               s = va_arg(args, char**);
+               unpack_string(&bp, s, *ep);
             }
             break;
-        case 'o':
+         case 'o':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                blob = va_arg(args, char**);
-                blob_len = va_arg(args, int32_t*);
-                unpack_blob(&bp, blob, blob_len, *ep);
+            for (i = 0; i < num; i++)
+            {
+               blob = va_arg(args, char**);
+               blob_len = va_arg(args, int32_t*);
+               unpack_blob(&bp, blob, blob_len, *ep);
             }
             break;
-        case 't':
+         case 't':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
-            for (i = 0; i < num; i++) {
-                time = va_arg(args, struct timeb*);
-                unpack_timeb(&bp, time, *ep);
+            for (i = 0; i < num; i++)
+            {
+               time = va_arg(args, struct timeb*);
+               unpack_timeb(&bp, time, *ep);
             }
             break;
-        default:
-            if (isdigit((int)*p)) {
-                num_buf[num_buf_idx++] = *p;
-            } else {
-                return -1;
-            }
-        }
-    }
-    return (bp - buf);
+         default:
+            if (isdigit((int)*p))
+               num_buf[num_buf_idx++] = *p;
+            else 
+               return -1;
+      }
+   }
+   return (bp - buf);
 }
 
 /*
@@ -767,131 +841,132 @@ static int unpack_va_list(unsigned char *buf, int offset, const char *fmt,
  */
 int struct_pack(unsigned char *buf, const char *fmt, ...)
 {
-    va_list args;
-    int packed_len = 0;
+   va_list args;
+   int packed_len = 0;
 
-    va_start(args, fmt);
-    packed_len = pack_va_list(buf, 0, fmt, args);
-    va_end(args);
+   va_start(args, fmt);
+   packed_len = pack_va_list(buf, 0, fmt, args);
+   va_end(args);
 
-    return packed_len;
+   return packed_len;
 }
 
 int struct_pack_into(int offset, unsigned char *buf, const char *fmt, ...)
 {
-    va_list args;
-    int packed_len = 0;
+   va_list args;
+   int packed_len = 0;
 
-    va_start(args, fmt);
-    packed_len = pack_va_list(buf, offset, fmt, args);
-    va_end(args);
+   va_start(args, fmt);
+   packed_len = pack_va_list(buf, offset, fmt, args);
+   va_end(args);
 
-    return packed_len;
+   return packed_len;
 }
 
 int struct_unpack(unsigned char *buf, const char *fmt, ...)
 {
-    va_list args;
-    int unpacked_len = 0;
+   va_list args;
+   int unpacked_len = 0;
 
-    va_start(args, fmt);
-    unpacked_len = unpack_va_list(buf, 0, fmt, args);
-    va_end(args);
+   va_start(args, fmt);
+   unpacked_len = unpack_va_list(buf, 0, fmt, args);
+   va_end(args);
 
-    return unpacked_len;
+   return unpacked_len;
 }
 
 int struct_unpack_from(int offset, unsigned char *buf, const char *fmt, ...)
 {
-    va_list args;
-    int unpacked_len = 0;
+   va_list args;
+   int unpacked_len = 0;
 
-    va_start(args, fmt);
-    unpacked_len = unpack_va_list(buf, offset, fmt, args);
-    va_end(args);
+   va_start(args, fmt);
+   unpacked_len = unpack_va_list(buf, offset, fmt, args);
+   va_end(args);
 
-    return unpacked_len;
+   return unpacked_len;
 }
 
 int struct_calcsize(const char *fmt)
 {
-    int ret;
-    const char *p;
-    char num_buf[32];
-    int num_buf_idx;
-    int num;
+   int ret;
+   const char *p;
+   char num_buf[32];
+   int num_buf_idx;
+   int num;
 
-    CHECK_PREREQUISITE();
+   CHECK_PREREQUISITE();
 
-    ret = 0;
-    memset(num_buf, 0, sizeof(num_buf));
-    num_buf_idx = 0;
+   ret = 0;
+   memset(num_buf, 0, sizeof(num_buf));
+   num_buf_idx = 0;
 
-    for (p = fmt; *p != '\0'; p++) {
-        switch (*p) {
-        case '=': /* fall through */
-        case '<': /* fall through */
-        case '>': /* fall through */
-        case '!': /* ignore endian characters */
+   for (p = fmt; *p != '\0'; p++)
+   {
+      switch (*p)
+      {
+         case '=': /* fall through */
+         case '<': /* fall through */
+         case '>': /* fall through */
+         case '!': /* ignore endian characters */
             break;
-        case 'b':
+         case 'b':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(char));
             break;
-        case 'B':
+         case 'B':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(unsigned char));
             break;
-        case 'h':
+         case 'h':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(int16_t));
             break;
-        case 'H':
+         case 'H':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(uint16_t));
             break;
-        case 'i': /* fall through */
-        case 'l':
+         case 'i': /* fall through */
+         case 'l':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(int32_t));
             break;
-        case 'I': /* fall through */
-        case 'L':
+         case 'I': /* fall through */
+         case 'L':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(uint32_t));
             break;
-        case 'q':
+         case 'q':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(int64_t));
             break;
-        case 'Q':
+         case 'Q':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(uint64_t));
             break;
-        case 'f':
+         case 'f':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(float));
             break;
-        case 'd':
+         case 'd':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(double));
             break;
-        case 's':
+         case 's':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(int32_t));
             break;
-        case 't':
+         case 't':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(struct timeb));
             break;
-        default:
-            if (isdigit((int)*p)) {
-                num_buf[num_buf_idx++] = *p;
-            } else {
-                return -1;
-            }
-        }
-    }
-    return ret;
+         default:
+            if (isdigit((int)*p)) 
+               num_buf[num_buf_idx++] = *p;
+            else 
+               return -1;
+      }
+   }
+   return ret;
 }
 
