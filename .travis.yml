@@ -1,3 +1,7 @@
 language: c
+notifications:
+  email: false
 compiler: gcc
 script: make
+after_script:
+  - ./main
