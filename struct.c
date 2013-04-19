@@ -232,7 +232,7 @@ static void pack_blob(unsigned char **bp, char *blob, int32_t len, int endian)
     {
         memcpy(*bp, blob, len);
         *bp += len;
-        fill = ROUNDUP(*bp) - *(int *)bp;
+        fill = ROUNDUP(*(int *)bp) - *(int *)bp;
         for (i = 0; i < fill; i++)
             *((*bp)++) = 0;
     }
@@ -411,9 +411,9 @@ static void unpack_string(unsigned char **bp, char **str, int endian)
     unpack_int32_t(bp, &len, endian);
     if (len > 0)
     {
-        *str = blobndup((char *)*bp, len);
+        *str = blobndup((char *)(*(int *)bp), len);
         *bp += len;
-        *bp = (unsigned char *)ROUNDUP(*bp);
+        *bp = (unsigned char *)ROUNDUP(*(int *)bp);
     }
     else
     {
@@ -427,9 +427,9 @@ static void unpack_blob(unsigned char **bp, char **str, int32_t *len, int endian
     unpack_int32_t(bp, len, endian);
     if (len > 0)
     {
-        *str = blobndup((char *)*bp, *len);
+        *str = blobndup((char *)(*(int *)bp), *len);
         *bp += *len;
-        *bp = (unsigned char *)ROUNDUP(bp);
+        *bp = (unsigned char *)ROUNDUP(*(int *)bp);
     }
     else
         *str = NULL;
