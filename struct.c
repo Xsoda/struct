@@ -18,7 +18,7 @@
 
 #define ALIGNMENT 4
 #define ALIGNMENT_MASK (ALIGNMENT - 1)
-#define ROUNDUP(x) (int)((((unsigned char *)(x)) + ALIGNMENT_MASK) & ~ALIGNMENT_MASK)
+#define ROUNDUP(x) (int)((((uint32_t)(x)) + ALIGNMENT_MASK) & ~ALIGNMENT_MASK)
 
 enum endian {
     STRUCT_ENDIAN_NOT_SET,
