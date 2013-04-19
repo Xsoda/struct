@@ -18,7 +18,7 @@
 
 #define ALIGNMENT 4
 #define ALIGNMENT_MASK (ALIGNMENT - 1)
-#define ROUNDUP(x) (((x) + ALIGNMENT_MASK) & ~ALIGNMENT_MASK)
+#define ROUNDUP(x) (int)((((unsigned char *)(x)) + ALIGNMENT_MASK) & ~ALIGNMENT_MASK)
 
 enum endian {
     STRUCT_ENDIAN_NOT_SET,
@@ -232,7 +232,7 @@ static void pack_blob(unsigned char **bp, char *blob, int32_t len, int endian)
     {
         memcpy(*bp, blob, len);
         *bp += len;
-        fill = (int)ROUNDUP((int)*bp) - (int)*bp;
+        fill = ROUNDUP(*bp) - (int)*bp;
         for (i = 0; i < fill; i++)
             *((*bp)++) = 0;
     }
@@ -247,10 +247,10 @@ static void pack_string(unsigned char **bp, char *str, int endian)
 
 static void pack_timeb(unsigned char **bp, struct timeb *time, int endian)
 {
-	pack_int64_t(bp, time->time, endian);
-	pack_uint16_t(bp, time->millitm, endian);
-	pack_int16_t(bp, time->timezone, endian);
-	pack_int16_t(bp, time->dstflag, endian);
+    pack_int64_t(bp, time->time, endian);
+    pack_uint16_t(bp, time->millitm, endian);
+    pack_int16_t(bp, time->timezone, endian);
+    pack_int16_t(bp, time->dstflag, endian);
 }
 
 static void unpack_int16_t(unsigned char **bp, int16_t *dst, int endian)
@@ -413,13 +413,13 @@ static void unpack_string(unsigned char **bp, char **str, int endian)
     {
         *str = blobndup((char *)*bp, len);
         *bp += len;
-        *bp = (unsigned char *)ROUNDUP((int32_t)*bp);
+        *bp = (unsigned char *)ROUNDUP(*bp);
     }
-	else
-	{
-		*str = (char *)malloc(1);
-		(*str)[0] = 0;
-	}
+    else
+    {
+        *str = (char *)malloc(1);
+        (*str)[0] = 0;
+    }
 }
 
 static void unpack_blob(unsigned char **bp, char **str, int32_t *len, int endian)
@@ -431,16 +431,16 @@ static void unpack_blob(unsigned char **bp, char **str, int32_t *len, int endian
         *bp += *len;
         *bp = (unsigned char *)ROUNDUP((int32_t)*bp);
     }
-	else
-		*str = NULL;
+    else
+        *str = NULL;
 }
 
 static void unpack_timeb(unsigned char **bp, struct timeb *time, int endian)
 {
-	unpack_int64_t(bp, &time->time, endian);
-	unpack_uint16_t(bp, &time->millitm, endian);
-	unpack_int16_t(bp, &time->timezone, endian);
-	unpack_int16_t(bp, &time->dstflag, endian);
+    unpack_int64_t(bp, &time->time, endian);
+    unpack_uint16_t(bp, &time->millitm, endian);
+    unpack_int16_t(bp, &time->timezone, endian);
+    unpack_int16_t(bp, &time->dstflag, endian);
 }
 
 static int pack_va_list(unsigned char *buf, int offset, const char *fmt,
@@ -468,7 +468,7 @@ static int pack_va_list(unsigned char *buf, int offset, const char *fmt,
     char *s;
     char *blob;
     int32_t blob_len;
-	struct timeb *time;
+    struct timeb *time;
 
     CHECK_PREREQUISITE();
 
@@ -586,13 +586,13 @@ static int pack_va_list(unsigned char *buf, int offset, const char *fmt,
                 pack_blob(&bp, blob, blob_len, *ep);
             }
             break;
-		case 't':
-			CHECK_REPETITION(num, num_buf_idx, num_buf);
-			for (i = 0; i < num; i++) {
-				time = va_arg(args, struct timeb*);
-				pack_timeb(&bp, time, *ep);
-			}
-			break;
+        case 't':
+            CHECK_REPETITION(num, num_buf_idx, num_buf);
+            for (i = 0; i < num; i++) {
+                time = va_arg(args, struct timeb*);
+                pack_timeb(&bp, time, *ep);
+            }
+            break;
         default:
             if (isdigit((int)*p)) {
                 num_buf[num_buf_idx++] = *p;
@@ -629,7 +629,7 @@ static int unpack_va_list(unsigned char *buf, int offset, const char *fmt,
     char **s;
     char **blob;
     int32_t *blob_len;
-	struct timeb *time;
+    struct timeb *time;
 
     CHECK_PREREQUISITE();
 
@@ -741,13 +741,13 @@ static int unpack_va_list(unsigned char *buf, int offset, const char *fmt,
                 unpack_blob(&bp, blob, blob_len, *ep);
             }
             break;
-		case 't':
-			CHECK_REPETITION(num, num_buf_idx, num_buf);
-			for (i = 0; i < num; i++) {
-				time = va_arg(args, struct timeb*);
-				unpack_timeb(&bp, time, *ep);
-			}
-			break;
+        case 't':
+            CHECK_REPETITION(num, num_buf_idx, num_buf);
+            for (i = 0; i < num; i++) {
+                time = va_arg(args, struct timeb*);
+                unpack_timeb(&bp, time, *ep);
+            }
+            break;
         default:
             if (isdigit((int)*p)) {
                 num_buf[num_buf_idx++] = *p;
@@ -880,10 +880,10 @@ int struct_calcsize(const char *fmt)
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(int32_t));
             break;
-		case 't':
-			CHECK_REPETITION(num, num_buf_idx, num_buf);
-			ret += (num * sizeof(struct timeb));
-			break;
+        case 't':
+            CHECK_REPETITION(num, num_buf_idx, num_buf);
+            ret += (num * sizeof(struct timeb));
+            break;
         default:
             if (isdigit((int)*p)) {
                 num_buf[num_buf_idx++] = *p;

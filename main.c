@@ -13,7 +13,7 @@ char my_isprint(char c)
 }
 void print_hex(unsigned char *blob, int len)
 {
-    int offset = 0, i, j;
+    int i, j;
     len = len > 0 ? len : 0;
     if (len)
     {
@@ -37,12 +37,12 @@ void print_hex(unsigned char *blob, int len)
 int main()
 {
     int len;
-    char blob_pack[35];
-	unsigned long long magic;
-    unsigned char buf[200];
+    char blob_pack[35] = {0xcc};
+    unsigned long long magic;
+    unsigned char buf[200] = {0};
     char *str1, *str2, *blob;
     strcpy(&blob_pack[8], "Xsoda");
-    len = struct_pack(buf, "!Q2so", 0x58736F6461000000LL,"Xsodaaaa", "Hello, World!", blob_pack, 21);
+    len = struct_pack(buf, "!Q2so", 0x58736F6461000000LL,"Xsodaaaa", "Hello, World!", blob_pack, 20);
     print_hex(buf, len);
     struct_unpack(buf, "!Q2so", &magic, &str1, &str2, &blob, &len);
     printf("-------------------------------------------\n");
