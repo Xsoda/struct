@@ -43,6 +43,7 @@ int main()
     char *str1, *str2, *blob;
     strcpy(&blob_pack[8], "Xsoda");
     len = struct_pack(buf, "!Q2so", 0x58736F6461000000LL,"Xsodaaaa", "Hello, World!", blob_pack, 20);
+    printf("pack success, length: %d\n", len);
     print_hex(buf, len);
     struct_unpack(buf, "!Q2so", &magic, &str1, &str2, &blob, &len);
     printf("-------------------------------------------\n");
