@@ -1,7 +1,7 @@
 # Struct Makefile
 
 CC=gcc
-CFLAGS= -Wall -g
+CFLAGS= -Wall -g -fPIC
 WARNINGS= -Wall -W -Wstrict-prototypes -Wwrite-strings
 DEBUG?= -g -ggdb
 
@@ -9,7 +9,7 @@ LIBNAME=libstruct
 TEST=main
 DYLIBSUFFIX=so
 DYLIBNAME=$(LIBNAME).$(DYLIBSUFFIX)
-DYLIB_MAKE_CMD=$(CC) -shared -Wl,-soname,$(DYLIBNAME) -o $(DYLIBNAME) $(LDFLAGS)
+DYLIB_MAKE_CMD=$(CC) -shared -Wl,-soname,$(DYLIBNAME) -o -fPIC $(DYLIBNAME) $(LDFLAGS)
 
 TEST_SRC=main.c
 TEST_OBJ=$(TEST_SRC:.c=.o)
