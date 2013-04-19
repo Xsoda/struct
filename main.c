@@ -1,5 +1,6 @@
 #include "struct.h"
 #include <stdio.h>
+#include <stdint.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -37,10 +38,12 @@ void print_hex(unsigned char *blob, int len)
 int main()
 {
     int len;
-    char blob_pack[35] = {0xcc};
-    unsigned long long magic;
+    char blob_pack[35];
+    uint64_t magic;
     unsigned char buf[200] = {0};
-    char *str1, *str2, *blob;
+    char *str1 = NULL, *str2 = NULL, *blob = NULL;
+	for (len = 0; len < sizeof(blob_pack); len++)
+		blob_pack[len] = 0xCD;
     strcpy(&blob_pack[8], "Xsoda");
     len = struct_pack(buf, "!Q2so", 0x58736F6461000000LL,"Xsodaaaa", "Hello, World!", blob_pack, 20);
     printf("pack success, length: %d\n", len);
