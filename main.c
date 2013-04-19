@@ -38,12 +38,13 @@ int main()
 {
     int len;
     char blob_pack[35];
+	unsigned long long magic;
     unsigned char buf[200];
     char *str1, *str2, *blob;
     strcpy(&blob_pack[8], "Xsoda");
-    len = struct_pack(buf, "!2so", "Xsodaaaa", "Hello, World!", blob_pack, 21);
+    len = struct_pack(buf, "!Q2so", 0x58736F6461000000LL,"Xsodaaaa", "Hello, World!", blob_pack, 21);
     print_hex(buf, len);
-    struct_unpack(buf, "!2so", &str1, &str2, &blob, &len);
+    struct_unpack(buf, "!Q2so", &magic, &str1, &str2, &blob, &len);
     printf("-------------------------------------------\n");
     printf("unpack 1: %s\n", str1);
     printf("unpack 2: %s\n", str2);

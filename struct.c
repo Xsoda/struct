@@ -416,7 +416,10 @@ static void unpack_string(unsigned char **bp, char **str, int endian)
         *bp = (unsigned char *)ROUNDUP((int32_t)*bp);
     }
 	else
-		*str = NULL;
+	{
+		*str = (char *)malloc(1);
+		(*str)[0] = 0;
+	}
 }
 
 static void unpack_blob(unsigned char **bp, char **str, int32_t *len, int endian)
