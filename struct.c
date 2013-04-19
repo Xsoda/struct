@@ -18,7 +18,7 @@
 
 #define ALIGNMENT 4
 #define ALIGNMENT_MASK (ALIGNMENT - 1)
-#define ROUNDUP(x) (int)((((uint32_t)(x)) + ALIGNMENT_MASK) & ~ALIGNMENT_MASK)
+#define ROUNDUP(x) (void *)((((uint32_t)(x)) + ALIGNMENT_MASK) & ~ALIGNMENT_MASK)
 
 enum endian {
     STRUCT_ENDIAN_NOT_SET,
@@ -429,7 +429,7 @@ static void unpack_blob(unsigned char **bp, char **str, int32_t *len, int endian
     {
         *str = blobndup((char *)*bp, *len);
         *bp += *len;
-        *bp = (unsigned char *)ROUNDUP(bp);
+        *bp = (unsigned char *)ROUNDUP(*(int *)bp);
     }
     else
         *str = NULL;
