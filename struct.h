@@ -55,12 +55,20 @@
  *  -------+--------------------+--------------
  *   d     | double             | 8
  *  -------+--------------------+--------------
- *   s     | char *             | Null-terminated string
+ *   s     | char *             | Null-terminated string 
  *  -------+--------------------+--------------
  *   o     | char *             | blob data
  *  -------+--------------------+---------------
  *   t     | struct timeb       | sizeof(struct timeb) == 14
  *  --------------------------------------------
+ *
+ * Note. blob data and null-terminated string will add extern null character.
+ *
+ * +-----------------+--------+--------+...+--------+--------+...+--------+
+ * | 4 byte length n | byte 0 | byte 1 |...|byte n-1|    0   |...|    0   |
+ * +-----------------+--------+--------+...+--------+--------+...+--------+
+ *                   |<-----------n bytes data----->|<------r bytes------>|
+ *                   |<-----------n+r (where (n+r) mod 4 = 0)>----------->|
  *
  * A format character may be preceded by an integral repeat count.
  * For example, the format string '4h' means exactly the same as 'hhhh'.
