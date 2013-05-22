@@ -1,8 +1,8 @@
 language: c
 notifications:
   email: false
-compiler: gcc
+compiler:
+  - clang 
+  - gcc
 script: make
-after_script:
-  - export LD_LIBRARY_PATH=`pwd`
-  - ./main
+after_script: ./struct_test
