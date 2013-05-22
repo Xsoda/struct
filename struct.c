@@ -485,7 +485,7 @@ static void unpack_blob(unsigned char **bp, char **str, int32_t *len, int endian
 
 static void unpack_timeb(unsigned char **bp, struct timeb *time, int endian)
 {
-   unpack_int64_t(bp, &time->time, endian);
+   unpack_int64_t(bp, (int64_t *)&time->time, endian);
    unpack_uint16_t(bp, &time->millitm, endian);
    unpack_int16_t(bp, &time->timezone, endian);
    unpack_int16_t(bp, &time->dstflag, endian);
