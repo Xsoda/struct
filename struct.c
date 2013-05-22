@@ -952,6 +952,11 @@ int struct_calcsize(const char *fmt)
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(double));
             break;
+         /* 
+          * blob data and null-terminated string can't calcsize size, 
+          * so function `struct_calcsize` always return minimal required size. 
+          */
+         case 'b':
          case 's':
             CHECK_REPETITION(num, num_buf_idx, num_buf);
             ret += (num * sizeof(int32_t));
